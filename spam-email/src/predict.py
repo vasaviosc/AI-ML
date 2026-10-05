@@ -1,6 +1,14 @@
 import joblib
+from pathlib import Path
 
-model = joblib.load("model/spam_model.pkl")
+root = Path(__file__).resolve().parents[1]
+model_dir = root / "model"
+
+try:
+    model = joblib.load(model_dir / "spam_model.pkl")
+except FileNotFoundError:
+    print(f"Model not found")
+    raise SystemExit(1)
 
 print("Spam Email Classifier")
 print("---------------------")
