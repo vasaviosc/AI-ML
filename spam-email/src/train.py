@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import joblib
 
@@ -50,6 +51,7 @@ print()
 print("Confusion Matrix:")
 print(confusion_matrix(y_test, predictions))
 
+os.makedirs("model", exist_ok=True)
 joblib.dump(model, "model/spam_model.pkl")
 
 print()
