@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import joblib
 
@@ -7,7 +8,12 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
-data = pd.read_csv("data/spam.csv")
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "spam.csv"
+MODEL_DIR = BASE_DIR / "model"
+MODEL_PATH = MODEL_DIR / "spam_model.pkl"
+
+data = pd.read_csv(DATA_PATH)
 
 data["label"] = data["label"].map({
     "ham": 0,
@@ -50,7 +56,8 @@ print()
 print("Confusion Matrix:")
 print(confusion_matrix(y_test, predictions))
 
-joblib.dump(model, "model/spam_model.pkl")
+MODEL_DIR.mkdir(parents=True, exist_ok=True)
+joblib.dump(model, MODEL_PATH)
 
 print()
 print("Model saved successfully!")
