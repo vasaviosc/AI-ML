@@ -1,6 +1,16 @@
+from pathlib import Path
+import sys
 import joblib
 
-model = joblib.load("model/spam_model.pkl")
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = BASE_DIR / "model" / "spam_model.pkl"
+
+if not MODEL_PATH.exists():
+    print(f"Error: Model file not found at '{MODEL_PATH}'.")
+    print("Please run 'src/train.py' first to train and save the model.")
+    sys.exit(1)
+
+model = joblib.load(MODEL_PATH)
 
 print("Spam Email Classifier")
 print("---------------------")
