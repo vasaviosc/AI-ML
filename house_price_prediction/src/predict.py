@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
 import joblib
+from pathlib import Path
 
-model = joblib.load("../models/house_price_model.pkl")
-feature_columns = joblib.load("../models/feature_columns.pkl")
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+model = joblib.load(BASE_DIR / "models" / "house_price_model.pkl")
+feature_columns = joblib.load(BASE_DIR / "models" / "feature_columns.pkl")
 st.set_page_config(
     page_title="House Price Predictor",
     page_icon="🏠",
