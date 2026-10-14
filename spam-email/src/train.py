@@ -52,12 +52,12 @@ param_grid = [
     {
         'classifier': [LogisticRegression(max_iter=1000, random_state=42)],
         'classifier__C': [0.1, 1.0, 10.0],
-        'vectorizer__ngram_range': [(1, 1), (1, 2)]
+        'tfidf__ngram_range': [(1, 1), (1, 2)]  # Changed vectorizer__ to tfidf__
     },
     {
         'classifier': [MultinomialNB()],
         'classifier__alpha': [0.1, 0.5, 1.0],
-        'vectorizer__ngram_range': [(1, 1), (1, 2)]
+        'tfidf__ngram_range': [(1, 1), (1, 2)]  # Changed vectorizer__ to tfidf__
     }
 ]
 
