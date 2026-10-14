@@ -3,10 +3,10 @@ import joblib
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.naive_bayes import MultinomialNB
 data = pd.read_csv("data/spam.csv")
 
 data["label"] = data["label"].map({
@@ -24,9 +24,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
+#good to use a pipeline to do the vectorization and classification at the same time
+#but it is also good to use stop words to remove words which add unnecessary weightage e.g. 'and, but, to' 
 model = Pipeline([
-    ("tfidf", TfidfVectorizer()),
-    ("classifier", MultinomialNB())
+    ("tfidf", TfidfVectorizer(stop_words='english')),
+    ("classifier", LogisticRegression(max_iter=1000, random_state=29))
 ])
 
 model.fit(x_train, y_train)
@@ -34,21 +36,36 @@ model.fit(x_train, y_train)
 predictions = model.predict(x_test)
 
 accuracy = accuracy_score(y_test, predictions)
-precision = precision_score(y_test, predictions, zero_division=0)
-recall = recall_score(y_test, predictions, zero_division=0)
-f1 = f1_score(y_test, predictions, zero_division=0)
+print(classification_report(y_test, predictions))
 
 print("Model trained successfully!")
 print()
 print("Model Evaluation")
 print("-----------------")
 print("Accuracy :", round(accuracy, 2))
-print("Precision:", round(precision, 2))
-print("Recall   :", round(recall, 2))
-print("F1 Score :", round(f1, 2))
 print()
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, predictions))
+
+from sklearn.model_selection import GridSearchCV
+
+# Defined a parameter grid to compare both classifiers inside the pipeline
+param_grid = [
+    {
+        'classifier': [LogisticRegression(max_iter=1000, random_state=42)],
+        'classifier__C': [0.1, 1.0, 10.0],
+        'tfidf__ngram_range': [(1, 1), (1, 2)]  # Changed vectorizer__ to tfidf__
+    },
+    {
+        'classifier': [MultinomialNB()],
+        'classifier__alpha': [0.1, 0.5, 1.0],
+        'tfidf__ngram_range': [(1, 1), (1, 2)]  # Changed vectorizer__ to tfidf__
+    }
+]
+
+grid_search = GridSearchCV(model, param_grid, cv=5, scoring='f1_macro', n_jobs=-1)
+grid_search.fit(x_train, y_train)
+
+print("Best Parameters:", grid_search.best_params_)
+print("Best CV Score:", grid_search.best_score_)
 
 joblib.dump(model, "model/spam_model.pkl")
 
