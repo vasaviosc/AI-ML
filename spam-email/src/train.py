@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import joblib
 
@@ -50,7 +51,12 @@ print()
 print("Confusion Matrix:")
 print(confusion_matrix(y_test, predictions))
 
-joblib.dump(model, "model/spam_model.pkl")
+model_dir = Path(__file__).resolve().parent.parent / "model"
+model_dir.mkdir(parents=True, exist_ok=True)
 
-print()
-print("Model saved successfully!")
+model_path = model_dir / "spam_model.pkl"
+
+joblib.dump(model, model_path)
+
+print(f"Model saved successfully at: {model_path}")
+
